@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from asyncio import start_server
 
 import numpy as np
 import torch as th
@@ -14,6 +15,8 @@ def create_named_schedule_sampler(name, diffusion):
     """
     if name == "uniform":
         return UniformSampler(diffusion)
+    elif name.startswith("uniform_split_"):
+        return UniformSplitSampler(diffusion, split_num=int(name[-1]))
     elif name == "loss-second-moment":
         return LossSecondMomentResampler(diffusion)
     else:
@@ -66,6 +69,17 @@ class UniformSampler(ScheduleSampler):
     def weights(self):
         return self._weights
 
+class UniformSplitSampler(ScheduleSampler):
+    def __init__(self, diffusion, split_num):
+        self.diffusion = diffusion
+        chosen_timesteps = [
+            diffusion.snr_splits[split_num] > diffusion.snrs[i] >= diffusion.snr_splits[split_num+1] for i in range(diffusion.num_timesteps)
+        ]
+        self._weights = np.array(chosen_timesteps).astype('float32')
+
+
+    def weights(self):
+        return self._weights
 
 class LossAwareSampler(ScheduleSampler):
     def update_with_local_losses(self, local_ts, local_losses):
