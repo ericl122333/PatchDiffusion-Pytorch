@@ -77,6 +77,12 @@ DIFFUSION_FLAGS="--diffusion_steps 1000 --noise_schedule linear"
 TRAIN_FLAGS="--lr 1e-4 --batch_size 128"
 ```
 
+Through the ```--weight_schedule``` argument, we also support different weight schedules of $\lambda_t$, where the objective is $\lambda_t\lVert\textbf{x} - \textbf{x}_\theta(\textbf{z}_t, t)  \rVert$. The default is "sqrt_snr", where $\lambda_t$ = $\sqrt{\frac{\alpha}{1-\alpha}}$. However we also include support for the [P2 loss weighting](https://arxiv.org/abs/2204.00227) ("p2") , as well as "snr", "snr+1" and "truncated_snr" schedules from the [progressive distillation](https://arxiv.org/abs/2202.00512) paper.
+
+To train a model with splitting, add ``` "--snr_splits '{snr_split_values}'" ``` to MODEL_FLAGS and add ```--schedule_sampler uniform_split_{num}``` where num is the split index starting from 0. Model splitting is described in Section 4.1 of the paper. Note: the SNR is defined as alpha/(1-alpha).
+
+
+
 Then use:
 ```
 python scripts/image_train.py --data_dir path/to/images $MODEL_FLAGS $DIFFUSION_FLAGS $TRAIN_FLAGS
