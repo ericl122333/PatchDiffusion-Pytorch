@@ -21,7 +21,8 @@ def diffusion_defaults():
         model_mean_type="xstart",
         rescale_timesteps=False,
         rescale_learned_sigmas=False,
-        snr_splits=""
+        snr_splits="",
+        weight_schedule="sqrt_snr"
     )
 
 
@@ -64,7 +65,8 @@ def model_and_diffusion_defaults():
 
         patch_size=4,
         classifier_free=True,
-        snr_splits=""
+        snr_splits="",
+        weight_schedule="sqrt_snr"
 
     )
     res.update(diffusion_defaults())
@@ -105,7 +107,8 @@ def create_model_and_diffusion(
     resblock_updown,
     use_fp16,
     use_new_attention_order,
-    snr_splits
+    snr_splits,
+    weight_schedule
 ):
     model = create_model(
         image_size,
@@ -136,7 +139,8 @@ def create_model_and_diffusion(
         rescale_timesteps=rescale_timesteps,
         rescale_learned_sigmas=rescale_learned_sigmas,
         timestep_respacing=timestep_respacing,
-        snr_splits=snr_splits
+        snr_splits=snr_splits,
+        weight_schedule=weight_schedule
     )
     return model, diffusion
 
@@ -428,7 +432,8 @@ def create_gaussian_diffusion(
     rescale_timesteps=False,
     rescale_learned_sigmas=False,
     timestep_respacing="",
-    snr_splits=""
+    snr_splits="",
+    weight_schedule="sqrt_snr"
 ):
     betas = gd.get_named_beta_schedule(noise_schedule, steps)
     if use_kl:
@@ -464,7 +469,8 @@ def create_gaussian_diffusion(
         ),
         loss_type=loss_type,
         rescale_timesteps=rescale_timesteps,
-        snr_splits=snr_splits
+        snr_splits=snr_splits,
+        weight_schedule=weight_schedule
     )
 
 
