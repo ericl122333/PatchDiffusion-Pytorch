@@ -131,7 +131,8 @@ class GaussianDiffusion:
         model_var_type,
         loss_type,
         rescale_timesteps=False,
-        snr_splits=""
+        snr_splits="",
+        weight_schedule="sqrt_snr"
     ):
         self.model_mean_type = model_mean_type
         self.model_var_type = model_var_type
@@ -184,6 +185,7 @@ class GaussianDiffusion:
             self.snr_splits += [float(s) for s in snr_splits.split(",")]
         self.snr_splits += [0]
 
+        self.weight_schedule = weight_schedule
 
     def q_mean_variance(self, x_start, t):
         """
@@ -779,7 +781,7 @@ class GaussianDiffusion:
         output = th.where((t == 0), decoder_nll, kl)
         return {"output": output, "pred_xstart": out["pred_xstart"]}
 
-    def training_losses(self, model, x_start, t, model_kwargs=None, noise=None, weight_schedule="sqrt_snr"):
+    def training_losses(self, model, x_start, t, model_kwargs=None, noise=None):
         """
         Compute training losses for a single timestep.
 
@@ -847,8 +849,10 @@ class GaussianDiffusion:
             else:
                 raise NotImplementedError()
             
+            weight_schedule = self.weight_schedule
+
             if weight_schedule == "sqrt_snr":
-                weightings = self.sqrt(self.snrs)
+                weightings = np.sqrt(self.snrs)
             elif weight_schedule == "p2":
                 weightings = self.snrs * self.sqrt_one_minus_alphas_cumprod 
                 """
