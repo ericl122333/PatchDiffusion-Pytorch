@@ -196,7 +196,7 @@ class TrainLoop:
                 micro,
                 t,
                 model_kwargs=micro_cond,
-                weight_schedule=self.weight_schedule
+                #weight_schedule=self.weight_schedule
             )
 
             if last_batch or not self.use_ddp:
