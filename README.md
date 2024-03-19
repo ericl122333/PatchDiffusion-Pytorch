@@ -1,8 +1,12 @@
 # Patch Diffusion
 
+**UPDATE (Mar 2024): Unfortunately, the model checkpoints were lost.** They were accidentally deleted when I was clearing my personal google drive storage. Hopefully this doesnt cause too much of a detriment. (At this point the patching technique we use here has become pretty commonplace among diffusion transformers. For those interested in ImageNet-scale models with open weights the [DiT repo](https://github.com/facebookresearch/DiT) might be a good starting point.)
+
 Code for the paper "Improving Diffusion Model Efficiency Through Patching". The core idea of the paper is to insert a ViT-style patching operation at the beginning of the U-Net, letting it operate on data with smaller height and width. We show in our paper that the optimal prediction for **x** is quite blurry for most timesteps, and therefore convolutions at the original resolution are usually not necessary. This causes a considerable reduction in compute cost: For example, when using a patch size of 4 (P = 4), generating 256x256 images costs only as much as generating 64x64 images normally (with P = 1). 
 
 # Pretrained Models
+
+**UPDATE: per the above message, the links in this section are broken**
 
 We include our models for ImageNet 256x256 and FFHQ 1024x1024, as well as 3 LSUN models with P=2, P=4, and P=8. 
 
